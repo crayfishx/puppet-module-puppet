@@ -3,16 +3,15 @@
 # Manages puppetserver
 #
 class puppet::server (
-  Variant[Enum['true', 'false'], Boolean] $ca = false, #lint:ignore:quoted_booleans
-  Variant[Array[String, 1], Undef]        $autosign_entries = undef,
-  String                                  $sysconfig_path = '/etc/sysconfig/puppetserver',
-  String                                  $memory_size = '2g', # only m and g are appropriate for unit
-  Optional[String]                        $enc = undef,
+  Boolean                           $ca = false,
+  Boolean                           $fsw_service = false,
+  Variant[Array[String, 1], Undef]  $autosign_entries = undef,
+  String                            $sysconfig_path = '/etc/sysconfig/puppetserver',
+  String                            $memory_size = '2g', # only m and g are appropriate for unit
+  Optional[String]                  $enc = undef,
 ) {
 
   include ::puppet
-
-  $_ca = str2bool($ca)
 
   if $sysconfig_path != undef {
     validate_absolute_path($sysconfig_path)
@@ -35,7 +34,7 @@ class puppet::server (
     'rundir'  => { setting => 'rundir', value => '/var/run/puppetlabs/puppetserver',},
     'pidfile' => { setting => 'pidfile', value => '/var/run/puppetlabs/puppetserver/puppetserver.pid',},
     'codedir' => { setting => 'codedir', value =>'/etc/puppetlabs/code',},
-    'ca'      => { setting => 'ca', value => $_ca,},
+    'ca'      => { setting => 'ca', value => $ca,},
   }
 
   if $enc != undef {
